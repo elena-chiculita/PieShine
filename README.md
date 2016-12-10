@@ -155,8 +155,8 @@ New group added: name: "Living 2", id: 9, lights: [1,2]
 Deleting a group can be done by specifying the id (group ids are displayed with bridge.groups).
 ```python
 bridge.groups
-(9) * Group 1 (LightGroup) *** Living Tall, Living Short
-(8) * tralala (LightGroup) *** Living Tall, Living Short
+(9) * Living 2 (LightGroup) *** Living Tall, Living Short
+(8) * Group 1 (LightGroup) *** Living Tall, Living Short
 
 bridge.delete_group(8)
 Group deleted: 8
