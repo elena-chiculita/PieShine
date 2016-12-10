@@ -1,11 +1,11 @@
 # PieShine
-Python interactive shell for controlling Philips hue lights
+Python interactive shell for controlling Philips hue lights.
 
 ## Features
 
-Compliant with the Philips Hue API 1.16.0
-Support for Lights and Groups (more to come)
-Compatible with Python 2.7 and Python 3.5.2
+* Compliant with the Philips Hue API 1.16.0
+* Support for Lights and Groups (more to come)
+* Compatible with Python 2.7 and Python 3.5.2
 
 
 ## Prerequisites
@@ -22,6 +22,9 @@ or
 ./pysh.py bridge.py
 ```
 
+The script will scan for the bridge IP and if found, you must create a new user by pressing the bridge button (you will be notified when to press). IP and user will be saved in 'bridge.cfg' and subsequent runs of the script will restore IP and user from the file.
+
+
 ## Usage
 
 ### Controlling the lights
@@ -30,7 +33,7 @@ For example the name of a light is "Living Tall" and it's a colored light.
 
 To see available settings: bridge.lights.LivingTall. <TAB pressed>
 
-GET
+* GET
 
 ```python
 bridge.lights.LivingTall.on
@@ -54,7 +57,18 @@ bridge.lights.LivingTall.unique_id
 bridge.lights.LivingTall.sw_version
 ```
 
-SET (along with some examples)
+Display information about all lights:
+```python
+bridge.lights
+```
+
+Display information about one light:
+```python
+bridge.lights.LivingTall
+```
+
+
+* SET (along with some examples)
 
 ```python
 bridge.lights.LivingTall.turn_off()
@@ -65,12 +79,12 @@ bridge.lights.LivingTall.set_effect('colorloop')
 bridge.lights.LivingTall.set_effect('none')
 ```
 
-* Color can be set by:
+Color can be set by:
 
 - hue and saturation
 ```python
 bridge.lights.LivingTall.set_hue(30000)
-bridge.lights.LivingTall.set_sat(150
+bridge.lights.LivingTall.set_sat(150)
 ```
 
 - color temperature
@@ -90,12 +104,6 @@ edge of the gamut on a best-effort basis)
 bridge.lights.LivingTall.set_color(255, 255, 255)
 ```
 
-* test all available settings for a light
-```python
-bridge.lights.LivingTall._test()
-```
-
-
 SET methods can be applied to all lights: bridge.lights. <TAB pressed>
 
 ```python
@@ -105,7 +113,6 @@ bridge.lights.set_bri(255)
 bridge.lights.set_alert('select')
 #etc.
 ```
-
 
 ### Controlling the groups
 
@@ -121,16 +128,69 @@ bridge.groups.Living.turn_on()
 #etc.
 ```
 
-* test all available settings for a group
+Display information about all groups:
 ```python
-bridge.groups.Living._test()
+bridge.groups
+```
+
+Display information about all lights from a group:
+```python
+bridge.groups.Living
+```
+
+Groups can be created by specifying the lights associated as a list of ids (bridge.lights will display the light ids). Group name is optional.
+
+```python
+bridge.lights
+(1) * Living Tall * On * bri = 254 * Gamut B [x,y] = [0.5268, 0.4133] * sat = 226 * hue = 12510 * ct = 500  
+(2) * Living Short * On * bri = 254 * Gamut B [x,y] = [0.5268, 0.4133] * sat = 226 * hue = 12510 * ct = 500 
+
+bridge.post_group([1,2])
+New group added: id: 8, lights: [1,2]
+
+bridge.post_group([1,2], 'Living 2')
+New group added: name: "Living 2", id: 9, lights: [1,2]
+```
+
+Deleting a group can be done by specifying the id (group ids are displayed with bridge.groups).
+```python
+bridge.groups
+(9) * Group 1 (LightGroup) *** Living Tall, Living Short
+(8) * tralala (LightGroup) *** Living Tall, Living Short
+
+bridge.delete_group(8)
+Group deleted: 8
+```
+
+### Controlling the users
+
+When creating a user (id is radomly generated and name will be "PieShine#user") you must press the bridge button first:
+
+```python
+bridge.post_user()
+```
+
+Display all users (id, create date, last use date, name):
+
+```python
+bridge.display_users()
+```
+
+Delete user by specifying the id:
+```python
+bridge.display_users()
+    u'xg3EwQGabcV6QWqszyAvmZcJ3X9defJNVjDifZGb': {   u'create date': u'2016-12-10T03:05:56',
+                                                     u'last use date': u'2016-12-10T03:26:24',
+                                                     u'name': u'PieShine#user'}}
+                                                     
+bridge.delete_user('xg3EwQGabcV6QWqszyAvmZcJ3X9defJNVjDifZGb')
 ```
 
 ### Write your own scripts (how to access objects)
 
 For example set brightness to 255 for all lights/groups.
 
-Access all the lights from the setup
+* Access all the lights from the setup
 
 ```python
 for light in bridge.lights.values():
@@ -141,9 +201,7 @@ for light in bridge.lights.values():
 [light.set_bri(255) for light in bridge.lights.values()]
 ```
 
-Access all the groups from the setup
-
-Each of the following four will do:
+* Access all the groups from the setup (one of the following will do):
 
 ```python
 for group in bridge.groups.values():
@@ -164,10 +222,19 @@ for group in bridge.groups.values():
 [light.set_bri(255) for group in bridge.groups.values() for light in group.values()]
 ```
 
-
 ## Running the tests
 
-If you've changed the code remember to call bridge.test() at some point to make sure you haven't ruined anything :)
+If you've changed the code remember to run the bridge test at some point to make sure you haven't ruined anything :)
+```python
+bridge.test()
+```
+
+Or to break the bridge test into more specific tests for light and group objects:
+```python
+bridge.lights.LivingTall._test()
+bridge.lights._test()
+bridge.groups.Living._test()
+```
 
 
 ## Acknowledgments:
